@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+<body>
+  <h2>Canvas</h2>
+
+  <div class="controls">
+    <label for="lineWidth" class="element-label">Line width:</label>
+    <input id="lineWidth" type="range" name="lineWidth" min="10" max="90" value="1">
+
+    <label for="lineJoin" class="element-label">Line join:</label>
+    <select name="lineJoin" id="lineJoin">
+      <option value="miter">Miter</option>
+      <option value="round" selected>Round</option>
+      <option value="bevel">Bevel</option>
+    </select>
+    
+    <label for="lineCap" class="element-label">Line cap:</label>
+    <select name="lineCap" id="lineCap">
+      <option value="butt">Butt</option>
+      <option value="round" selected>Round</option>
+      <option value="square">Square</option>
+    </select>
+
+    <label for="strokeStyle" class="element-label">Stroke Color</label>
+    <input id="strokeStyle" type="color" name="strokeStyle" value="#048108">
+  </div>
+
+  <canvas id="draw" width="800" height="800"></canvas>
+
+  <style>
+    body {
+      text-align: center;
+      background: #193549;
+      color: white;
+      font-family: 'helvetica neue', sans-serif;
+      font-weight: 100;
+      font-size: 24px;
+    }
+
+    canvas {
+      background: #FFFFFF;
+    }
+
+    .element-label {
+      margin-left: 20px;
+    }
+
+    .controls {
+      margin-bottom: 50px;
+    }
+
+    input {
+      width: 100px;
+    }
+  </style>
+
+  <script>
+    const canvas = document.querySelector('#draw');
+    const context = canvas.getContext('2d');
+    canvas.width = (3 * window.innerWidth) / 4;
+    canvas.height = (3 * window.innerHeight) / 5;
+    window.addEventListener('resize', () => {
+      canvas.width = (3 * window.innerWidth) / 4;
+      canvas.height = (3 * window.innerHeight) / 5;
+    });
+    
+    context.strokeStyle = '#048108';
+    context.lineJoin = 'round';
+    context.lineCap = 'round';
+    context.lineWidth = 1;
+    
+    const inputs = document.querySelectorAll('.controls input');
+    function handleUpdate(e) {
+      context[this.name] = this.value;
+    }
+    inputs.forEach(input => input.addEventListener('change', handleUpdate));
+    inputs.forEach(input => input.addEventListener('mousemove', handleUpdate));
+
+    const selects = document.querySelectorAll('.controls select');
+    function handleSelectUpdate(e) {
+      context[this.name] = this.value;
+    }
+    selects.forEach(input => input.addEventListener('change', handleSelectUpdate));
+    selects.forEach(input => input.addEventListener('mousemove', handleSelectUpdate));
+
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    function draw(e) {
+      if (!isDrawing) return;
+      context.beginPath();
+      context.moveTo(lastX, lastY);
+      context.lineTo(e.offsetX, e.offsetY);
+      context.stroke();
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+    }
+    canvas.addEventListener('mousedown', (e) => {
+      isDrawing = true;
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+    });
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', () => isDrawing = false);
+    canvas.addEventListener('mouseout', () => isDrawing = false);
+  </script>
+
+</body>
+</html>
